@@ -1,12 +1,12 @@
 import base64
-import re
 import json
 import pathlib
+import re
 import uuid
 from typing import Any
 
-from mkdocs.plugins import BasePlugin
 from mkdocs.config.defaults import MkDocsConfig
+from mkdocs.plugins import BasePlugin
 from mkdocs.structure.files import File, Files, InclusionLevel
 
 
@@ -66,18 +66,33 @@ def _ipynb_to_md(file: File) -> tuple[str, dict[str, bytes]]:
                         case "stream":
                             _source(output["text"], "", new_content, newlines=False)
                         case "error":
-                            _source(output["traceback"], "python", new_content, newlines=True)
+                            _source(
+                                output["traceback"],
+                                "python",
+                                new_content,
+                                newlines=True,
+                            )
                         case "execute_result":
                             _data(output["data"], new_content, aux)
                         case "display_data":
                             _data(output["data"], new_content, aux)
+                        case other:
+                            raise ValueError(
+                                f'Found cell with `"output_type": {other}`, which is '
+                                "not understood."
+                            )
             case "markdown":
                 new_content.extend(cell["source"])
             case other:
-                raise ValueError(f"Can only convert cells of type 'code' or 'markdown'. Got '{other}'.")
+                raise ValueError(
+                    "Can only convert cells of type 'code' or 'markdown'. Got "
+                    f"'{other}'."
+                )
         new_content.append("\n\n")
     data_folder = pathlib.Path(file.src_uri).parent / "_data"
-    return "".join(new_content), {str(data_folder / name): value for name, value in aux.items()}
+    return "".join(new_content), {
+        str(data_folder / name): value for name, value in aux.items()
+    }
 
 
 class NotebookPlugin(BasePlugin):
