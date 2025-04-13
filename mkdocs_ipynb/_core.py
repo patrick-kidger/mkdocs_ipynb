@@ -19,10 +19,14 @@ _ansi_regex = re.compile(r"\x1b\[[;?0-9]*[a-zA-Z]")
 
 
 def _source(source: list[str], lang: str, new_content: list[str], newlines: bool):
-    new_content.append(f"```{lang}\n")
     content = ("\n" if newlines else "").join(source).strip()
-    new_content.append(_ansi_regex.sub("", content))
-    new_content.append("\n```")
+    content = _ansi_regex.sub("", content)
+    code_block = "```"
+    while code_block in content:
+        code_block += "`"
+    new_content.append(f"{code_block}{lang}\n")
+    new_content.append(content)
+    new_content.append(f"\n{code_block}")
 
 
 def _image_png(data: str, new_content: list[str], aux: dict[str, bytes]) -> None:

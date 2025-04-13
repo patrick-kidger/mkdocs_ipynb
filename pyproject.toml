@@ -20,7 +20,7 @@ name = "mkdocs_ipynb"
 readme = "README.md"
 requires-python = ">=3.10"
 urls = {repository = "https://github.com/patrick-kidger/mkdocs_ipynb"}
-version = "0.1.0"
+version = "0.1.1"
 
 [project.optional-dependencies]
 dev = ["pre-commit"]
